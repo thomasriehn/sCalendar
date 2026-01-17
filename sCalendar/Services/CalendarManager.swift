@@ -199,7 +199,8 @@ class CalendarManager: ObservableObject {
         location: String?,
         notes: String?,
         calendarId: String,
-        recurrenceFrequency: EKRecurrenceFrequency? = nil
+        recurrenceFrequency: EKRecurrenceFrequency? = nil,
+        alarmOffset: TimeInterval? = nil
     ) async throws {
         guard let ekCalendar = eventStore.calendar(withIdentifier: calendarId) else {
             throw CalendarError.calendarNotFound
@@ -223,11 +224,16 @@ class CalendarManager: ObservableObject {
             ekEvent.addRecurrenceRule(recurrenceRule)
         }
 
+        if let offset = alarmOffset {
+            let alarm = EKAlarm(relativeOffset: offset)
+            ekEvent.addAlarm(alarm)
+        }
+
         try eventStore.save(ekEvent, span: .thisEvent)
         await fetchEvents()
     }
 
-    func updateEvent(_ event: CalendarEvent, title: String, startDate: Date, endDate: Date, isAllDay: Bool, location: String?, notes: String?, calendarId: String, recurrenceFrequency: EKRecurrenceFrequency? = nil) async throws {
+    func updateEvent(_ event: CalendarEvent, title: String, startDate: Date, endDate: Date, isAllDay: Bool, location: String?, notes: String?, calendarId: String, recurrenceFrequency: EKRecurrenceFrequency? = nil, alarmOffset: TimeInterval? = nil) async throws {
         guard let ekEvent = eventStore.event(withIdentifier: event.id) else {
             throw CalendarError.eventNotFound
         }
@@ -258,6 +264,19 @@ class CalendarManager: ObservableObject {
                 end: nil
             )
             ekEvent.addRecurrenceRule(recurrenceRule)
+        }
+
+        // Remove existing alarms
+        if let existingAlarms = ekEvent.alarms {
+            for alarm in existingAlarms {
+                ekEvent.removeAlarm(alarm)
+            }
+        }
+
+        // Add new alarm if specified
+        if let offset = alarmOffset {
+            let alarm = EKAlarm(relativeOffset: offset)
+            ekEvent.addAlarm(alarm)
         }
 
         try eventStore.save(ekEvent, span: .futureEvents)

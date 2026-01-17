@@ -42,6 +42,65 @@ enum RecurrenceOption: String, CaseIterable, Identifiable {
     }
 }
 
+enum AlertOption: String, CaseIterable, Identifiable {
+    case none
+    case atTime
+    case fiveMinutes
+    case fifteenMinutes
+    case thirtyMinutes
+    case oneHour
+    case twoHours
+    case oneDay
+    case oneWeek
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .none: return LocalizedStrings.alertNone
+        case .atTime: return LocalizedStrings.alertAtTime
+        case .fiveMinutes: return LocalizedStrings.alert5Min
+        case .fifteenMinutes: return LocalizedStrings.alert15Min
+        case .thirtyMinutes: return LocalizedStrings.alert30Min
+        case .oneHour: return LocalizedStrings.alert1Hour
+        case .twoHours: return LocalizedStrings.alert2Hours
+        case .oneDay: return LocalizedStrings.alert1Day
+        case .oneWeek: return LocalizedStrings.alert1Week
+        }
+    }
+
+    /// Returns the offset in seconds (negative value for before event)
+    var alarmOffset: TimeInterval? {
+        switch self {
+        case .none: return nil
+        case .atTime: return 0
+        case .fiveMinutes: return -5 * 60
+        case .fifteenMinutes: return -15 * 60
+        case .thirtyMinutes: return -30 * 60
+        case .oneHour: return -60 * 60
+        case .twoHours: return -2 * 60 * 60
+        case .oneDay: return -24 * 60 * 60
+        case .oneWeek: return -7 * 24 * 60 * 60
+        }
+    }
+
+    static func from(ekAlarm: EKAlarm?) -> AlertOption {
+        guard let alarm = ekAlarm else { return .none }
+        let offset = alarm.relativeOffset
+        switch offset {
+        case 0: return .atTime
+        case -5 * 60: return .fiveMinutes
+        case -15 * 60: return .fifteenMinutes
+        case -30 * 60: return .thirtyMinutes
+        case -60 * 60: return .oneHour
+        case -2 * 60 * 60: return .twoHours
+        case -24 * 60 * 60: return .oneDay
+        case -7 * 24 * 60 * 60: return .oneWeek
+        default: return .none
+        }
+    }
+}
+
 struct AddEventView: View {
     @EnvironmentObject var calendarManager: CalendarManager
     @Environment(\.dismiss) var dismiss
@@ -57,6 +116,7 @@ struct AddEventView: View {
     @State private var notes: String = ""
     @State private var selectedCalendarId: String?
     @State private var recurrence: RecurrenceOption = .none
+    @State private var alert: AlertOption = .none
     @State private var showingError: Bool = false
     @State private var errorMessage: String = ""
 
@@ -126,6 +186,12 @@ struct AddEventView: View {
                             Text(option.displayName).tag(option)
                         }
                     }
+
+                    Picker(LocalizedStrings.alert, selection: $alert) {
+                        ForEach(AlertOption.allCases) { option in
+                            Text(option.displayName).tag(option)
+                        }
+                    }
                 }
 
                 Section {
@@ -182,6 +248,7 @@ struct AddEventView: View {
             notes = event.notes ?? ""
             selectedCalendarId = event.calendarId
             recurrence = RecurrenceOption.from(ekRecurrenceRule: event.ekEvent.recurrenceRules?.first)
+            alert = AlertOption.from(ekAlarm: event.ekEvent.alarms?.first)
         } else {
             // Set default calendar from settings, or first writable calendar
             let defaultId = UserDefaults.standard.string(forKey: "defaultCalendarId")
@@ -226,7 +293,8 @@ struct AddEventView: View {
                         location: location.isEmpty ? nil : location,
                         notes: notes.isEmpty ? nil : notes,
                         calendarId: calendarId,
-                        recurrenceFrequency: recurrence.ekRecurrenceFrequency
+                        recurrenceFrequency: recurrence.ekRecurrenceFrequency,
+                        alarmOffset: alert.alarmOffset
                     )
                 } else {
                     try await calendarManager.addEvent(
@@ -237,7 +305,8 @@ struct AddEventView: View {
                         location: location.isEmpty ? nil : location,
                         notes: notes.isEmpty ? nil : notes,
                         calendarId: calendarId,
-                        recurrenceFrequency: recurrence.ekRecurrenceFrequency
+                        recurrenceFrequency: recurrence.ekRecurrenceFrequency,
+                        alarmOffset: alert.alarmOffset
                     )
                 }
                 dismiss()

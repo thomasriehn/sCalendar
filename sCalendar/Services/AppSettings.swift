@@ -622,6 +622,156 @@ struct LocalizedStrings {
         }
     }
 
+    static var alert: String {
+        let lang = currentLanguage
+        switch lang {
+        case .german: return "Erinnerung"
+        case .french: return "Alerte"
+        case .spanish: return "Alerta"
+        case .italian: return "Avviso"
+        case .dutch: return "Herinnering"
+        case .portuguese: return "Alerta"
+        case .japanese: return "通知"
+        case .chinese: return "提醒"
+        default: return "Alert"
+        }
+    }
+
+    static var alertNone: String {
+        let lang = currentLanguage
+        switch lang {
+        case .german: return "Keine"
+        case .french: return "Aucune"
+        case .spanish: return "Ninguna"
+        case .italian: return "Nessuno"
+        case .dutch: return "Geen"
+        case .portuguese: return "Nenhum"
+        case .japanese: return "なし"
+        case .chinese: return "无"
+        default: return "None"
+        }
+    }
+
+    static var alertAtTime: String {
+        let lang = currentLanguage
+        switch lang {
+        case .german: return "Zur Startzeit"
+        case .french: return "Au moment de l'événement"
+        case .spanish: return "En el momento del evento"
+        case .italian: return "All'ora dell'evento"
+        case .dutch: return "Op tijd van gebeurtenis"
+        case .portuguese: return "Na hora do evento"
+        case .japanese: return "イベントの時刻"
+        case .chinese: return "事件发生时"
+        default: return "At time of event"
+        }
+    }
+
+    static var alert5Min: String {
+        let lang = currentLanguage
+        switch lang {
+        case .german: return "5 Minuten vorher"
+        case .french: return "5 minutes avant"
+        case .spanish: return "5 minutos antes"
+        case .italian: return "5 minuti prima"
+        case .dutch: return "5 minuten van tevoren"
+        case .portuguese: return "5 minutos antes"
+        case .japanese: return "5分前"
+        case .chinese: return "5分钟前"
+        default: return "5 minutes before"
+        }
+    }
+
+    static var alert15Min: String {
+        let lang = currentLanguage
+        switch lang {
+        case .german: return "15 Minuten vorher"
+        case .french: return "15 minutes avant"
+        case .spanish: return "15 minutos antes"
+        case .italian: return "15 minuti prima"
+        case .dutch: return "15 minuten van tevoren"
+        case .portuguese: return "15 minutos antes"
+        case .japanese: return "15分前"
+        case .chinese: return "15分钟前"
+        default: return "15 minutes before"
+        }
+    }
+
+    static var alert30Min: String {
+        let lang = currentLanguage
+        switch lang {
+        case .german: return "30 Minuten vorher"
+        case .french: return "30 minutes avant"
+        case .spanish: return "30 minutos antes"
+        case .italian: return "30 minuti prima"
+        case .dutch: return "30 minuten van tevoren"
+        case .portuguese: return "30 minutos antes"
+        case .japanese: return "30分前"
+        case .chinese: return "30分钟前"
+        default: return "30 minutes before"
+        }
+    }
+
+    static var alert1Hour: String {
+        let lang = currentLanguage
+        switch lang {
+        case .german: return "1 Stunde vorher"
+        case .french: return "1 heure avant"
+        case .spanish: return "1 hora antes"
+        case .italian: return "1 ora prima"
+        case .dutch: return "1 uur van tevoren"
+        case .portuguese: return "1 hora antes"
+        case .japanese: return "1時間前"
+        case .chinese: return "1小时前"
+        default: return "1 hour before"
+        }
+    }
+
+    static var alert2Hours: String {
+        let lang = currentLanguage
+        switch lang {
+        case .german: return "2 Stunden vorher"
+        case .french: return "2 heures avant"
+        case .spanish: return "2 horas antes"
+        case .italian: return "2 ore prima"
+        case .dutch: return "2 uur van tevoren"
+        case .portuguese: return "2 horas antes"
+        case .japanese: return "2時間前"
+        case .chinese: return "2小时前"
+        default: return "2 hours before"
+        }
+    }
+
+    static var alert1Day: String {
+        let lang = currentLanguage
+        switch lang {
+        case .german: return "1 Tag vorher"
+        case .french: return "1 jour avant"
+        case .spanish: return "1 día antes"
+        case .italian: return "1 giorno prima"
+        case .dutch: return "1 dag van tevoren"
+        case .portuguese: return "1 dia antes"
+        case .japanese: return "1日前"
+        case .chinese: return "1天前"
+        default: return "1 day before"
+        }
+    }
+
+    static var alert1Week: String {
+        let lang = currentLanguage
+        switch lang {
+        case .german: return "1 Woche vorher"
+        case .french: return "1 semaine avant"
+        case .spanish: return "1 semana antes"
+        case .italian: return "1 settimana prima"
+        case .dutch: return "1 week van tevoren"
+        case .portuguese: return "1 semana antes"
+        case .japanese: return "1週間前"
+        case .chinese: return "1周前"
+        default: return "1 week before"
+        }
+    }
+
     private static var currentLanguage: AppLanguage {
         let stored = UserDefaults.standard.string(forKey: "appLanguage") ?? "system"
         if stored == "system" {

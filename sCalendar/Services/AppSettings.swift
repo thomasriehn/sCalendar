@@ -397,6 +397,21 @@ struct LocalizedStrings {
         }
     }
 
+    static var selectDate: String {
+        let lang = currentLanguage
+        switch lang {
+        case .german: return "Datum auswählen"
+        case .french: return "Sélectionner une date"
+        case .spanish: return "Seleccionar fecha"
+        case .italian: return "Seleziona data"
+        case .dutch: return "Selecteer datum"
+        case .portuguese: return "Selecionar data"
+        case .japanese: return "日付を選択"
+        case .chinese: return "选择日期"
+        default: return "Select Date"
+        }
+    }
+
     static var starts: String {
         let lang = currentLanguage
         switch lang {
@@ -460,9 +475,12 @@ struct LocalizedStrings {
     private static var currentLanguage: AppLanguage {
         let stored = UserDefaults.standard.string(forKey: "appLanguage") ?? "system"
         if stored == "system" {
-            // Get system language
-            let systemLang = Locale.current.language.languageCode?.identifier ?? "en"
-            return AppLanguage(rawValue: systemLang) ?? .english
+            // Get system language from preferred languages
+            if let preferredLang = Locale.preferredLanguages.first {
+                let langCode = String(preferredLang.prefix(2))
+                return AppLanguage(rawValue: langCode) ?? .english
+            }
+            return .english
         }
         return AppLanguage(rawValue: stored) ?? .english
     }
@@ -517,6 +535,9 @@ enum AppLanguage: String, CaseIterable, Identifiable, Sendable {
     // Thread-safe access to current locale (reads directly from UserDefaults)
     static var currentLocale: Locale {
         let stored = UserDefaults.standard.string(forKey: "appLanguage") ?? "system"
+        if stored == "system" {
+            return Locale.current
+        }
         let language = AppLanguage(rawValue: stored) ?? .system
         return language.locale
     }

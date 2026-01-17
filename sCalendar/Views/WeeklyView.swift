@@ -2,6 +2,8 @@ import SwiftUI
 
 struct WeeklyView: View {
     @EnvironmentObject var calendarManager: CalendarManager
+    @State private var dragOffset: CGFloat = 0
+    @State private var isDragging = false
 
     private let columns = [
         GridItem(.flexible(), spacing: 1),
@@ -10,35 +12,58 @@ struct WeeklyView: View {
 
     var body: some View {
         GeometryReader { geometry in
-            ScrollView {
-                LazyVGrid(columns: columns, spacing: 1) {
-                    // 7 day cells
-                    ForEach(Array(calendarManager.currentWeekDates.enumerated()), id: \.offset) { index, date in
-                        DayCell(
-                            date: date,
-                            events: calendarManager.events(for: date),
-                            isLastRow: index >= 6,
-                            showMiniCalendar: false
-                        )
-                        .frame(minHeight: cellHeight(for: geometry, index: index))
-                    }
-
-                    // Mini calendar as 8th cell (same size as a day cell)
-                    MiniMonthCell()
-                        .frame(minHeight: cellHeight(for: geometry, index: 7))
+            LazyVGrid(columns: columns, spacing: 1) {
+                // 7 day cells
+                ForEach(Array(calendarManager.currentWeekDates.enumerated()), id: \.offset) { index, date in
+                    DayCell(
+                        date: date,
+                        events: calendarManager.events(for: date),
+                        isLastRow: index >= 6,
+                        showMiniCalendar: false
+                    )
+                    .frame(height: cellHeight(for: geometry, index: index))
                 }
-                .background(Color(.systemGray5))
+
+                // Mini calendar as 8th cell (same size as a day cell)
+                MiniMonthCell()
+                    .frame(height: cellHeight(for: geometry, index: 7))
             }
+            .background(Color(.systemGray5))
+            .offset(y: dragOffset)
+            .contentShape(Rectangle())
             .gesture(
-                DragGesture(minimumDistance: 50)
+                DragGesture(minimumDistance: 20)
+                    .onChanged { value in
+                        isDragging = true
+                        // Apply resistance to make it feel natural
+                        dragOffset = value.translation.height * 0.5
+                    }
                     .onEnded { value in
-                        if value.translation.width < -50 {
-                            withAnimation(.easeInOut(duration: 0.3)) {
-                                calendarManager.goToNextWeek()
+                        isDragging = false
+                        let threshold: CGFloat = 50
+
+                        if value.translation.height < -threshold {
+                            // Swipe up - go to next week
+                            withAnimation(.easeOut(duration: 0.2)) {
+                                dragOffset = -geometry.size.height
                             }
-                        } else if value.translation.width > 50 {
-                            withAnimation(.easeInOut(duration: 0.3)) {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                calendarManager.goToNextWeek()
+                                dragOffset = 0
+                            }
+                        } else if value.translation.height > threshold {
+                            // Swipe down - go to previous week
+                            withAnimation(.easeOut(duration: 0.2)) {
+                                dragOffset = geometry.size.height
+                            }
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                                 calendarManager.goToPreviousWeek()
+                                dragOffset = 0
+                            }
+                        } else {
+                            // Snap back
+                            withAnimation(.easeOut(duration: 0.2)) {
+                                dragOffset = 0
                             }
                         }
                     }

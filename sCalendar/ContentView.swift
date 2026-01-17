@@ -5,6 +5,7 @@ struct ContentView: View {
     @State private var showingSettings = false
     @State private var showingAddEvent = false
     @State private var showingSearch = false
+    @State private var showingMonthPicker = false
     @State private var searchText = ""
 
     var body: some View {
@@ -19,13 +20,20 @@ struct ContentView: View {
                     }
 
                     ToolbarItem(placement: .principal) {
-                        VStack(spacing: 0) {
-                            Text(calendarManager.currentWeekTitle)
-                                .font(.headline)
-                                .foregroundColor(.white)
-                            Text(LocalizedStrings.weekAbbreviation + " \(calendarManager.currentWeekNumber)")
-                                .font(.caption)
-                                .foregroundColor(.white.opacity(0.8))
+                        Button(action: { showingMonthPicker = true }) {
+                            VStack(spacing: 0) {
+                                HStack(spacing: 4) {
+                                    Text(calendarManager.currentWeekTitle)
+                                        .font(.headline)
+                                        .foregroundColor(.white)
+                                    Image(systemName: "chevron.down")
+                                        .font(.caption)
+                                        .foregroundColor(.white.opacity(0.8))
+                                }
+                                Text(LocalizedStrings.weekAbbreviation + " \(calendarManager.currentWeekNumber)")
+                                    .font(.caption)
+                                    .foregroundColor(.white.opacity(0.8))
+                            }
                         }
                     }
 
@@ -58,8 +66,81 @@ struct ContentView: View {
         .sheet(isPresented: $showingSearch) {
             SearchView(searchText: $searchText)
         }
+        .sheet(isPresented: $showingMonthPicker) {
+            MonthYearPickerView()
+        }
         .task {
             await calendarManager.loadData()
+        }
+    }
+}
+
+struct MonthYearPickerView: View {
+    @EnvironmentObject var calendarManager: CalendarManager
+    @Environment(\.dismiss) var dismiss
+    @State private var selectedMonth: Int = 1
+    @State private var selectedYear: Int = 2026
+
+    private let months: [String] = {
+        let formatter = DateFormatter()
+        formatter.locale = AppLanguage.currentLocale
+        return formatter.monthSymbols ?? []
+    }()
+
+    private var years: [Int] {
+        let currentYear = Calendar.current.component(.year, from: Date())
+        return Array((currentYear - 10)...(currentYear + 10))
+    }
+
+    var body: some View {
+        NavigationStack {
+            VStack {
+                HStack(spacing: 0) {
+                    Picker("Month", selection: $selectedMonth) {
+                        ForEach(1...12, id: \.self) { month in
+                            Text(months[month - 1]).tag(month)
+                        }
+                    }
+                    .pickerStyle(.wheel)
+
+                    Picker("Year", selection: $selectedYear) {
+                        ForEach(years, id: \.self) { year in
+                            Text(String(year)).tag(year)
+                        }
+                    }
+                    .pickerStyle(.wheel)
+                }
+                .padding()
+            }
+            .navigationTitle(LocalizedStrings.selectDate)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(LocalizedStrings.cancel) { dismiss() }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(LocalizedStrings.done) {
+                        goToSelectedDate()
+                        dismiss()
+                    }
+                }
+            }
+            .onAppear {
+                let calendar = Calendar.current
+                selectedMonth = calendar.component(.month, from: calendarManager.currentWeekStart)
+                selectedYear = calendar.component(.year, from: calendarManager.currentWeekStart)
+            }
+        }
+        .presentationDetents([.medium])
+    }
+
+    private func goToSelectedDate() {
+        var components = DateComponents()
+        components.year = selectedYear
+        components.month = selectedMonth
+        components.day = 1
+        if let date = Calendar.current.date(from: components) {
+            calendarManager.goToDate(date)
         }
     }
 }

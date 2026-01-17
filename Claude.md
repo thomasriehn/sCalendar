@@ -10,6 +10,7 @@ A native iOS calendar app built with SwiftUI that integrates with the system cal
 - **View Modes**: Daily, Weekly, Monthly, Yearly views with seamless switching
 - **Weekly View Layout**: Left column (days 1-4), Right column (days 5-7 + mini calendar)
 - **Recurring Events**: Support for daily, weekly, monthly, yearly recurrence
+- **Event Alerts**: Reminders at time of event, 5/15/30 min, 1/2 hours, 1 day, 1 week before
 - **Default Calendar**: Configurable default calendar for new events in Settings
 - **Week Start Setting**: Choose between Monday or Sunday as first day of week
 - **Multi-language Support**: 9 languages (English, German, French, Spanish, Italian, Dutch, Portuguese, Japanese, Chinese)
@@ -87,10 +88,11 @@ All user-facing strings are in `AppSettings.swift` via the `LocalizedStrings` st
 - Repository: https://github.com/thomasriehn/sCalendar
 - Privacy Policy: https://thomasriehn.github.io/sCalendar/privacy.html
 
-## Recent Changes (Build 11)
+## Recent Changes (Build 12)
 1. Added view modes (daily, weekly, monthly, yearly)
 2. New weekly layout with left/right columns
 3. Default calendar setting
-4. Recurring events support
-5. Calendar color picker in event creation
-6. Equal-sized cells in monthly/yearly views
+4. Recurring events support (daily, weekly, monthly, yearly)
+5. Event alerts/reminders (at time, 5/15/30 min, 1/2 hours, 1 day, 1 week before)
+6. Calendar color picker in event creation
+7. Equal-sized cells in monthly/yearly views

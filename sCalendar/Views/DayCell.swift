@@ -8,6 +8,7 @@ struct DayCell: View {
     var showMiniCalendar: Bool = false
 
     @State private var selectedEvent: CalendarEvent?
+    @State private var showingAddEvent = false
 
     private var isWeekend: Bool {
         date.isWeekend
@@ -82,8 +83,15 @@ struct DayCell: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(backgroundColor)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            showingAddEvent = true
+        }
         .sheet(item: $selectedEvent) { event in
             EventDetailView(event: event)
+        }
+        .sheet(isPresented: $showingAddEvent) {
+            AddEventView(preselectedDate: date)
         }
     }
 

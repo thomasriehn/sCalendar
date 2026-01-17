@@ -412,6 +412,51 @@ struct LocalizedStrings {
         }
     }
 
+    static var weekStartsOn: String {
+        let lang = currentLanguage
+        switch lang {
+        case .german: return "Woche beginnt am"
+        case .french: return "La semaine commence le"
+        case .spanish: return "La semana comienza el"
+        case .italian: return "La settimana inizia il"
+        case .dutch: return "Week begint op"
+        case .portuguese: return "Semana começa em"
+        case .japanese: return "週の始まり"
+        case .chinese: return "每周开始于"
+        default: return "Week starts on"
+        }
+    }
+
+    static var monday: String {
+        let lang = currentLanguage
+        switch lang {
+        case .german: return "Montag"
+        case .french: return "Lundi"
+        case .spanish: return "Lunes"
+        case .italian: return "Lunedì"
+        case .dutch: return "Maandag"
+        case .portuguese: return "Segunda-feira"
+        case .japanese: return "月曜日"
+        case .chinese: return "星期一"
+        default: return "Monday"
+        }
+    }
+
+    static var sunday: String {
+        let lang = currentLanguage
+        switch lang {
+        case .german: return "Sonntag"
+        case .french: return "Dimanche"
+        case .spanish: return "Domingo"
+        case .italian: return "Domenica"
+        case .dutch: return "Zondag"
+        case .portuguese: return "Domingo"
+        case .japanese: return "日曜日"
+        case .chinese: return "星期日"
+        default: return "Sunday"
+        }
+    }
+
     static var starts: String {
         let lang = currentLanguage
         switch lang {
@@ -555,6 +600,13 @@ class AppSettings: ObservableObject {
         }
     }
 
+    @Published var weekStartsOnMonday: Bool {
+        didSet {
+            UserDefaults.standard.set(weekStartsOnMonday, forKey: "weekStartsOnMonday")
+            NSUbiquitousKeyValueStore.default.set(weekStartsOnMonday, forKey: "weekStartsOnMonday")
+        }
+    }
+
     @Published var currentLocale: Locale
 
     private init() {
@@ -566,6 +618,24 @@ class AppSettings: ObservableObject {
         let language = AppLanguage(rawValue: stored) ?? .system
         self.selectedLanguage = language
         self.currentLocale = language.locale
+
+        // Load week start preference (default: Monday)
+        if NSUbiquitousKeyValueStore.default.object(forKey: "weekStartsOnMonday") != nil {
+            self.weekStartsOnMonday = NSUbiquitousKeyValueStore.default.bool(forKey: "weekStartsOnMonday")
+        } else if UserDefaults.standard.object(forKey: "weekStartsOnMonday") != nil {
+            self.weekStartsOnMonday = UserDefaults.standard.bool(forKey: "weekStartsOnMonday")
+        } else {
+            self.weekStartsOnMonday = true // Default to Monday
+        }
+    }
+
+    static var weekStartsOnMondaySetting: Bool {
+        if NSUbiquitousKeyValueStore.default.object(forKey: "weekStartsOnMonday") != nil {
+            return NSUbiquitousKeyValueStore.default.bool(forKey: "weekStartsOnMonday")
+        } else if UserDefaults.standard.object(forKey: "weekStartsOnMonday") != nil {
+            return UserDefaults.standard.bool(forKey: "weekStartsOnMonday")
+        }
+        return true // Default to Monday
     }
 
     private func updateLocale() {

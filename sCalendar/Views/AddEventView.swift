@@ -6,6 +6,7 @@ struct AddEventView: View {
     @Environment(\.dismiss) var dismiss
 
     var editingEvent: CalendarEvent?
+    var preselectedDate: Date?
 
     @State private var title: String = ""
     @State private var isAllDay: Bool = false
@@ -125,13 +126,25 @@ struct AddEventView: View {
 
             // Set default times
             let calendar = Calendar.current
-            let roundedDate = calendar.date(
-                bySetting: .minute,
-                value: 0,
-                of: Date()
-            ) ?? Date()
-            startDate = roundedDate.addingTimeInterval(3600)
-            endDate = startDate.addingTimeInterval(3600)
+            if let preselected = preselectedDate {
+                // Use preselected date with current time
+                let now = Date()
+                let hour = calendar.component(.hour, from: now)
+                let roundedHour = hour + 1
+                var components = calendar.dateComponents([.year, .month, .day], from: preselected)
+                components.hour = roundedHour
+                components.minute = 0
+                startDate = calendar.date(from: components) ?? preselected
+                endDate = startDate.addingTimeInterval(3600)
+            } else {
+                let roundedDate = calendar.date(
+                    bySetting: .minute,
+                    value: 0,
+                    of: Date()
+                ) ?? Date()
+                startDate = roundedDate.addingTimeInterval(3600)
+                endDate = startDate.addingTimeInterval(3600)
+            }
         }
     }
 

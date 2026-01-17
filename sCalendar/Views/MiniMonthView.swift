@@ -7,10 +7,20 @@ struct MiniMonthView: View {
         calendarManager.currentWeekStart
     }
 
+    private var weekStartsOnMonday: Bool {
+        UserDefaults.standard.object(forKey: "weekStartsOnMonday") == nil ? true : UserDefaults.standard.bool(forKey: "weekStartsOnMonday")
+    }
+
     private var dayLabels: [String] {
         let formatter = DateFormatter()
         formatter.locale = AppLanguage.currentLocale
-        return formatter.veryShortWeekdaySymbols
+        let symbols = formatter.veryShortWeekdaySymbols ?? []
+        // Reorder based on week start setting
+        if weekStartsOnMonday {
+            // Monday first: Mon, Tue, Wed, Thu, Fri, Sat, Sun
+            return Array(symbols[1...]) + [symbols[0]]
+        }
+        return symbols
     }
 
     private var monthTitle: String {
@@ -26,7 +36,17 @@ struct MiniMonthView: View {
         let firstWeekday = calendar.component(.weekday, from: firstDay)
         let daysCount = displayedMonth.daysInMonth()
 
-        var days: [Date?] = Array(repeating: nil, count: firstWeekday - 1)
+        // Calculate offset based on week start setting
+        let offset: Int
+        if weekStartsOnMonday {
+            // Monday = 0, Tuesday = 1, ..., Sunday = 6
+            offset = (firstWeekday + 5) % 7
+        } else {
+            // Sunday = 0, Monday = 1, ..., Saturday = 6
+            offset = firstWeekday - 1
+        }
+
+        var days: [Date?] = Array(repeating: nil, count: offset)
 
         for day in 0..<daysCount {
             if let date = calendar.date(byAdding: .day, value: day, to: firstDay) {
@@ -58,9 +78,10 @@ struct MiniMonthView: View {
             // Day labels
             HStack(spacing: 0) {
                 ForEach(Array(dayLabels.enumerated()), id: \.offset) { index, day in
+                    let isSunday = weekStartsOnMonday ? (index == 6) : (index == 0)
                     Text(day)
                         .font(.system(size: 10, weight: .medium))
-                        .foregroundColor(index == 0 ? .red : .primary)  // Sunday is index 0
+                        .foregroundColor(isSunday ? .red : .primary)
                         .frame(maxWidth: .infinity)
                 }
             }

@@ -13,7 +13,10 @@ extension Date {
     }
 
     var startOfWeek: Date {
-        let calendar = Calendar.current
+        var calendar = Calendar.current
+        // Read directly from UserDefaults to avoid actor isolation issues
+        let weekStartsOnMonday = UserDefaults.standard.object(forKey: "weekStartsOnMonday") == nil ? true : UserDefaults.standard.bool(forKey: "weekStartsOnMonday")
+        calendar.firstWeekday = weekStartsOnMonday ? 2 : 1 // 2 = Monday, 1 = Sunday
         let components = calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: self)
         return calendar.date(from: components)!
     }

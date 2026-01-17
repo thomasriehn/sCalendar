@@ -22,6 +22,14 @@ struct SettingsView: View {
                     }
                 }
 
+                Section(LocalizedStrings.weekStartsOn) {
+                    Picker(LocalizedStrings.weekStartsOn, selection: $appSettings.weekStartsOnMonday) {
+                        Text(LocalizedStrings.monday).tag(true)
+                        Text(LocalizedStrings.sunday).tag(false)
+                    }
+                    .pickerStyle(.segmented)
+                }
+
                 if calendarManager.authorizationStatus == .denied {
                     Section {
                         VStack(alignment: .leading, spacing: 8) {

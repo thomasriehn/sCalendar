@@ -1,6 +1,47 @@
 import SwiftUI
 import EventKit
 
+enum RecurrenceOption: String, CaseIterable, Identifiable {
+    case none
+    case daily
+    case weekly
+    case monthly
+    case yearly
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .none: return LocalizedStrings.recurrenceNone
+        case .daily: return LocalizedStrings.recurrenceDaily
+        case .weekly: return LocalizedStrings.recurrenceWeekly
+        case .monthly: return LocalizedStrings.recurrenceMonthly
+        case .yearly: return LocalizedStrings.recurrenceYearly
+        }
+    }
+
+    var ekRecurrenceFrequency: EKRecurrenceFrequency? {
+        switch self {
+        case .none: return nil
+        case .daily: return .daily
+        case .weekly: return .weekly
+        case .monthly: return .monthly
+        case .yearly: return .yearly
+        }
+    }
+
+    static func from(ekRecurrenceRule: EKRecurrenceRule?) -> RecurrenceOption {
+        guard let rule = ekRecurrenceRule else { return .none }
+        switch rule.frequency {
+        case .daily: return .daily
+        case .weekly: return .weekly
+        case .monthly: return .monthly
+        case .yearly: return .yearly
+        @unknown default: return .none
+        }
+    }
+}
+
 struct AddEventView: View {
     @EnvironmentObject var calendarManager: CalendarManager
     @Environment(\.dismiss) var dismiss
@@ -15,6 +56,7 @@ struct AddEventView: View {
     @State private var location: String = ""
     @State private var notes: String = ""
     @State private var selectedCalendarId: String?
+    @State private var recurrence: RecurrenceOption = .none
     @State private var showingError: Bool = false
     @State private var errorMessage: String = ""
 
@@ -78,6 +120,12 @@ struct AddEventView: View {
                         in: startDate...,
                         displayedComponents: isAllDay ? [.date] : [.date, .hourAndMinute]
                     )
+
+                    Picker(LocalizedStrings.recurrence, selection: $recurrence) {
+                        ForEach(RecurrenceOption.allCases) { option in
+                            Text(option.displayName).tag(option)
+                        }
+                    }
                 }
 
                 Section {
@@ -133,6 +181,7 @@ struct AddEventView: View {
             location = event.location ?? ""
             notes = event.notes ?? ""
             selectedCalendarId = event.calendarId
+            recurrence = RecurrenceOption.from(ekRecurrenceRule: event.ekEvent.recurrenceRules?.first)
         } else {
             // Set default calendar from settings, or first writable calendar
             let defaultId = UserDefaults.standard.string(forKey: "defaultCalendarId")
@@ -176,7 +225,8 @@ struct AddEventView: View {
                         isAllDay: isAllDay,
                         location: location.isEmpty ? nil : location,
                         notes: notes.isEmpty ? nil : notes,
-                        calendarId: calendarId
+                        calendarId: calendarId,
+                        recurrenceFrequency: recurrence.ekRecurrenceFrequency
                     )
                 } else {
                     try await calendarManager.addEvent(
@@ -186,7 +236,8 @@ struct AddEventView: View {
                         isAllDay: isAllDay,
                         location: location.isEmpty ? nil : location,
                         notes: notes.isEmpty ? nil : notes,
-                        calendarId: calendarId
+                        calendarId: calendarId,
+                        recurrenceFrequency: recurrence.ekRecurrenceFrequency
                     )
                 }
                 dismiss()

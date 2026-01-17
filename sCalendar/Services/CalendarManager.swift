@@ -198,7 +198,8 @@ class CalendarManager: ObservableObject {
         isAllDay: Bool,
         location: String?,
         notes: String?,
-        calendarId: String
+        calendarId: String,
+        recurrenceFrequency: EKRecurrenceFrequency? = nil
     ) async throws {
         guard let ekCalendar = eventStore.calendar(withIdentifier: calendarId) else {
             throw CalendarError.calendarNotFound
@@ -213,11 +214,20 @@ class CalendarManager: ObservableObject {
         ekEvent.notes = notes
         ekEvent.calendar = ekCalendar
 
+        if let frequency = recurrenceFrequency {
+            let recurrenceRule = EKRecurrenceRule(
+                recurrenceWith: frequency,
+                interval: 1,
+                end: nil
+            )
+            ekEvent.addRecurrenceRule(recurrenceRule)
+        }
+
         try eventStore.save(ekEvent, span: .thisEvent)
         await fetchEvents()
     }
 
-    func updateEvent(_ event: CalendarEvent, title: String, startDate: Date, endDate: Date, isAllDay: Bool, location: String?, notes: String?, calendarId: String) async throws {
+    func updateEvent(_ event: CalendarEvent, title: String, startDate: Date, endDate: Date, isAllDay: Bool, location: String?, notes: String?, calendarId: String, recurrenceFrequency: EKRecurrenceFrequency? = nil) async throws {
         guard let ekEvent = eventStore.event(withIdentifier: event.id) else {
             throw CalendarError.eventNotFound
         }
@@ -233,7 +243,24 @@ class CalendarManager: ObservableObject {
         ekEvent.location = location
         ekEvent.notes = notes
 
-        try eventStore.save(ekEvent, span: .thisEvent)
+        // Remove existing recurrence rules
+        if let existingRules = ekEvent.recurrenceRules {
+            for rule in existingRules {
+                ekEvent.removeRecurrenceRule(rule)
+            }
+        }
+
+        // Add new recurrence rule if specified
+        if let frequency = recurrenceFrequency {
+            let recurrenceRule = EKRecurrenceRule(
+                recurrenceWith: frequency,
+                interval: 1,
+                end: nil
+            )
+            ekEvent.addRecurrenceRule(recurrenceRule)
+        }
+
+        try eventStore.save(ekEvent, span: .futureEvents)
         await fetchEvents()
     }
 

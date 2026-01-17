@@ -532,6 +532,96 @@ struct LocalizedStrings {
         }
     }
 
+    static var recurrence: String {
+        let lang = currentLanguage
+        switch lang {
+        case .german: return "Wiederholen"
+        case .french: return "Récurrence"
+        case .spanish: return "Repetir"
+        case .italian: return "Ripeti"
+        case .dutch: return "Herhalen"
+        case .portuguese: return "Repetir"
+        case .japanese: return "繰り返し"
+        case .chinese: return "重复"
+        default: return "Repeat"
+        }
+    }
+
+    static var recurrenceNone: String {
+        let lang = currentLanguage
+        switch lang {
+        case .german: return "Nie"
+        case .french: return "Jamais"
+        case .spanish: return "Nunca"
+        case .italian: return "Mai"
+        case .dutch: return "Nooit"
+        case .portuguese: return "Nunca"
+        case .japanese: return "なし"
+        case .chinese: return "永不"
+        default: return "Never"
+        }
+    }
+
+    static var recurrenceDaily: String {
+        let lang = currentLanguage
+        switch lang {
+        case .german: return "Täglich"
+        case .french: return "Tous les jours"
+        case .spanish: return "Cada día"
+        case .italian: return "Ogni giorno"
+        case .dutch: return "Dagelijks"
+        case .portuguese: return "Diariamente"
+        case .japanese: return "毎日"
+        case .chinese: return "每天"
+        default: return "Every Day"
+        }
+    }
+
+    static var recurrenceWeekly: String {
+        let lang = currentLanguage
+        switch lang {
+        case .german: return "Wöchentlich"
+        case .french: return "Toutes les semaines"
+        case .spanish: return "Cada semana"
+        case .italian: return "Ogni settimana"
+        case .dutch: return "Wekelijks"
+        case .portuguese: return "Semanalmente"
+        case .japanese: return "毎週"
+        case .chinese: return "每周"
+        default: return "Every Week"
+        }
+    }
+
+    static var recurrenceMonthly: String {
+        let lang = currentLanguage
+        switch lang {
+        case .german: return "Monatlich"
+        case .french: return "Tous les mois"
+        case .spanish: return "Cada mes"
+        case .italian: return "Ogni mese"
+        case .dutch: return "Maandelijks"
+        case .portuguese: return "Mensalmente"
+        case .japanese: return "毎月"
+        case .chinese: return "每月"
+        default: return "Every Month"
+        }
+    }
+
+    static var recurrenceYearly: String {
+        let lang = currentLanguage
+        switch lang {
+        case .german: return "Jährlich"
+        case .french: return "Tous les ans"
+        case .spanish: return "Cada año"
+        case .italian: return "Ogni anno"
+        case .dutch: return "Jaarlijks"
+        case .portuguese: return "Anualmente"
+        case .japanese: return "毎年"
+        case .chinese: return "每年"
+        default: return "Every Year"
+        }
+    }
+
     private static var currentLanguage: AppLanguage {
         let stored = UserDefaults.standard.string(forKey: "appLanguage") ?? "system"
         if stored == "system" {

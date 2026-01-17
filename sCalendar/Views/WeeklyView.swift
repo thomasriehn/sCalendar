@@ -10,36 +10,31 @@ struct WeeklyView: View {
 
     var body: some View {
         GeometryReader { geometry in
-            ScrollView {
-                LazyVGrid(columns: columns, spacing: 1) {
-                    // 7 day cells
-                    ForEach(Array(calendarManager.currentWeekDates.enumerated()), id: \.offset) { index, date in
-                        DayCell(
-                            date: date,
-                            events: calendarManager.events(for: date),
-                            isLastRow: index >= 6,
-                            showMiniCalendar: false
-                        )
-                        .frame(minHeight: cellHeight(for: geometry, index: index))
-                    }
-
-                    // Mini calendar as 8th cell (same size as a day cell)
-                    MiniMonthCell()
-                        .frame(minHeight: cellHeight(for: geometry, index: 7))
+            LazyVGrid(columns: columns, spacing: 1) {
+                // 7 day cells
+                ForEach(Array(calendarManager.currentWeekDates.enumerated()), id: \.offset) { index, date in
+                    DayCell(
+                        date: date,
+                        events: calendarManager.events(for: date),
+                        isLastRow: index >= 6,
+                        showMiniCalendar: false
+                    )
+                    .frame(height: cellHeight(for: geometry, index: index))
                 }
-                .background(Color(.systemBackground))
+
+                // Mini calendar as 8th cell (same size as a day cell)
+                MiniMonthCell()
+                    .frame(height: cellHeight(for: geometry, index: 7))
             }
+            .background(Color(.systemBackground))
+            .contentShape(Rectangle())
             .gesture(
                 DragGesture(minimumDistance: 50)
                     .onEnded { value in
-                        if value.translation.width < -50 {
-                            withAnimation(.easeInOut(duration: 0.3)) {
-                                calendarManager.goToNextWeek()
-                            }
-                        } else if value.translation.width > 50 {
-                            withAnimation(.easeInOut(duration: 0.3)) {
-                                calendarManager.goToPreviousWeek()
-                            }
+                        if value.translation.height < -50 {
+                            calendarManager.goToNextWeek()
+                        } else if value.translation.height > 50 {
+                            calendarManager.goToPreviousWeek()
                         }
                     }
             )

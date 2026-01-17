@@ -457,6 +457,21 @@ struct LocalizedStrings {
         }
     }
 
+    static var defaultCalendar: String {
+        let lang = currentLanguage
+        switch lang {
+        case .german: return "Standardkalender"
+        case .french: return "Calendrier par défaut"
+        case .spanish: return "Calendario predeterminado"
+        case .italian: return "Calendario predefinito"
+        case .dutch: return "Standaardagenda"
+        case .portuguese: return "Calendário padrão"
+        case .japanese: return "デフォルトカレンダー"
+        case .chinese: return "默认日历"
+        default: return "Default Calendar"
+        }
+    }
+
     static var starts: String {
         let lang = currentLanguage
         switch lang {
@@ -607,6 +622,18 @@ class AppSettings: ObservableObject {
         }
     }
 
+    @Published var defaultCalendarId: String? {
+        didSet {
+            if let id = defaultCalendarId {
+                UserDefaults.standard.set(id, forKey: "defaultCalendarId")
+                NSUbiquitousKeyValueStore.default.set(id, forKey: "defaultCalendarId")
+            } else {
+                UserDefaults.standard.removeObject(forKey: "defaultCalendarId")
+                NSUbiquitousKeyValueStore.default.removeObject(forKey: "defaultCalendarId")
+            }
+        }
+    }
+
     @Published var currentLocale: Locale
 
     private init() {
@@ -627,6 +654,10 @@ class AppSettings: ObservableObject {
         } else {
             self.weekStartsOnMonday = true // Default to Monday
         }
+
+        // Load default calendar ID
+        self.defaultCalendarId = NSUbiquitousKeyValueStore.default.string(forKey: "defaultCalendarId")
+            ?? UserDefaults.standard.string(forKey: "defaultCalendarId")
     }
 
     static var weekStartsOnMondaySetting: Bool {

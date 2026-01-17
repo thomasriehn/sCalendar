@@ -36,18 +36,31 @@ struct AddEventView: View {
                 Section {
                     TextField(LocalizedStrings.title, text: $title)
 
-                    Picker(LocalizedStrings.calendar, selection: $selectedCalendarId) {
+                    Picker(selection: $selectedCalendarId) {
                         Text(LocalizedStrings.selectCalendar).tag(nil as String?)
                         ForEach(writableCalendars) { calendar in
-                            HStack {
+                            Label {
+                                Text(calendar.displayName)
+                            } icon: {
                                 Circle()
                                     .fill(calendar.color)
                                     .frame(width: 12, height: 12)
-                                Text(calendar.displayName)
                             }
                             .tag(calendar.id as String?)
                         }
+                    } label: {
+                        HStack {
+                            Text(LocalizedStrings.calendar)
+                            Spacer()
+                            if let calendarId = selectedCalendarId,
+                               let calendar = writableCalendars.first(where: { $0.id == calendarId }) {
+                                Circle()
+                                    .fill(calendar.color)
+                                    .frame(width: 12, height: 12)
+                            }
+                        }
                     }
+                    .pickerStyle(.navigationLink)
                 }
 
                 Section {
@@ -121,28 +134,29 @@ struct AddEventView: View {
             notes = event.notes ?? ""
             selectedCalendarId = event.calendarId
         } else {
-            // Set default calendar
-            selectedCalendarId = writableCalendars.first?.id
+            // Set default calendar from settings, or first writable calendar
+            let defaultId = UserDefaults.standard.string(forKey: "defaultCalendarId")
+            if let defaultId = defaultId, writableCalendars.contains(where: { $0.id == defaultId }) {
+                selectedCalendarId = defaultId
+            } else {
+                selectedCalendarId = writableCalendars.first?.id
+            }
 
             // Set default times
             let calendar = Calendar.current
             if let preselected = preselectedDate {
-                // Use preselected date with current time
-                let now = Date()
-                let hour = calendar.component(.hour, from: now)
-                let roundedHour = hour + 1
+                // Use preselected date with default start time of 10am
                 var components = calendar.dateComponents([.year, .month, .day], from: preselected)
-                components.hour = roundedHour
+                components.hour = 10
                 components.minute = 0
                 startDate = calendar.date(from: components) ?? preselected
                 endDate = startDate.addingTimeInterval(3600)
             } else {
-                let roundedDate = calendar.date(
-                    bySetting: .minute,
-                    value: 0,
-                    of: Date()
-                ) ?? Date()
-                startDate = roundedDate.addingTimeInterval(3600)
+                // Default to today at 10am
+                var components = calendar.dateComponents([.year, .month, .day], from: Date())
+                components.hour = 10
+                components.minute = 0
+                startDate = calendar.date(from: components) ?? Date()
                 endDate = startDate.addingTimeInterval(3600)
             }
         }

@@ -26,6 +26,9 @@
 		B1A000220001 /* DateExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1F000220001 /* DateExtensions.swift */; };
 		B1A000230001 /* ColorExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1F000230001 /* ColorExtensions.swift */; };
 		B1A000260001 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1F000260001 /* AppSettings.swift */; };
+		B1A000270001 /* DailyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1F000270001 /* DailyView.swift */; };
+		B1A000280001 /* MonthlyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1F000280001 /* MonthlyView.swift */; };
+		B1A000290001 /* YearlyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1F000290001 /* YearlyView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -50,6 +53,9 @@
 		B1F000240001 /* sCalendar.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = sCalendar.entitlements; sourceTree = "<group>"; };
 		B1F000250001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B1F000260001 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		B1F000270001 /* DailyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyView.swift; sourceTree = "<group>"; };
+		B1F000280001 /* MonthlyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthlyView.swift; sourceTree = "<group>"; };
+		B1F000290001 /* YearlyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YearlyView.swift; sourceTree = "<group>"; };
 		B1P000010001 /* sCalendar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = sCalendar.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -117,6 +123,9 @@
 				B1F000140001 /* CalendarSourceView.swift */,
 				B1F000150001 /* EventDetailView.swift */,
 				B1F000160001 /* AddEventView.swift */,
+				B1F000270001 /* DailyView.swift */,
+				B1F000280001 /* MonthlyView.swift */,
+				B1F000290001 /* YearlyView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -235,6 +244,9 @@
 				B1A000220001 /* DateExtensions.swift in Sources */,
 				B1A000230001 /* ColorExtensions.swift in Sources */,
 				B1A000260001 /* AppSettings.swift in Sources */,
+				B1A000270001 /* DailyView.swift in Sources */,
+				B1A000280001 /* MonthlyView.swift in Sources */,
+				B1A000290001 /* YearlyView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -369,7 +381,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = sCalendar/sCalendar.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_ASSET_PATHS = "\"sCalendar/Preview Content\"";
 				DEVELOPMENT_TEAM = N25E4T68XU;
 				ENABLE_PREVIEWS = YES;
@@ -404,7 +416,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = sCalendar/sCalendar.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_ASSET_PATHS = "\"sCalendar/Preview Content\"";
 				DEVELOPMENT_TEAM = N25E4T68XU;
 				ENABLE_PREVIEWS = YES;

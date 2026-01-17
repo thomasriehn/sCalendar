@@ -96,10 +96,10 @@ struct DayCell: View {
     }
 
     private var headerColor: Color {
-        if isWeekend {
-            return date.dayOfWeek == 1 ? .red : .blue
+        if date.dayOfWeek == 1 {
+            return .red  // Sunday
         }
-        return .blue
+        return .primary  // Black for all other days
     }
 
     private var backgroundColor: Color {

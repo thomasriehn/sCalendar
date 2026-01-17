@@ -11,6 +11,10 @@ struct SettingsView: View {
         Dictionary(grouping: calendarManager.calendars) { $0.accountName }
     }
 
+    private var writableCalendars: [CalendarInfo] {
+        calendarManager.calendars.filter { $0.ekCalendar.allowsContentModifications }
+    }
+
     var body: some View {
         NavigationStack {
             List {
@@ -28,6 +32,34 @@ struct SettingsView: View {
                         Text(LocalizedStrings.sunday).tag(false)
                     }
                     .pickerStyle(.segmented)
+                }
+
+                Section(LocalizedStrings.defaultCalendar) {
+                    Picker(selection: $appSettings.defaultCalendarId) {
+                        Text(LocalizedStrings.selectCalendar).tag(nil as String?)
+                        ForEach(writableCalendars) { calendar in
+                            Label {
+                                Text(calendar.displayName)
+                            } icon: {
+                                Circle()
+                                    .fill(calendar.color)
+                                    .frame(width: 12, height: 12)
+                            }
+                            .tag(calendar.id as String?)
+                        }
+                    } label: {
+                        HStack {
+                            Text(LocalizedStrings.defaultCalendar)
+                            Spacer()
+                            if let calendarId = appSettings.defaultCalendarId,
+                               let calendar = writableCalendars.first(where: { $0.id == calendarId }) {
+                                Circle()
+                                    .fill(calendar.color)
+                                    .frame(width: 12, height: 12)
+                            }
+                        }
+                    }
+                    .pickerStyle(.navigationLink)
                 }
 
                 if calendarManager.authorizationStatus == .denied {

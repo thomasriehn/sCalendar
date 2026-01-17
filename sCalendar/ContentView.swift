@@ -1,5 +1,27 @@
 import SwiftUI
 
+enum ViewMode: String, CaseIterable {
+    case daily, weekly, monthly, yearly
+
+    var icon: String {
+        switch self {
+        case .daily: return "calendar.day.timeline.left"
+        case .weekly: return "calendar"
+        case .monthly: return "calendar.badge.clock"
+        case .yearly: return "calendar.badge.plus"
+        }
+    }
+
+    func next() -> ViewMode {
+        switch self {
+        case .daily: return .weekly
+        case .weekly: return .monthly
+        case .monthly: return .yearly
+        case .yearly: return .daily
+        }
+    }
+}
+
 struct ContentView: View {
     @EnvironmentObject var calendarManager: CalendarManager
     @State private var showingSettings = false
@@ -7,10 +29,11 @@ struct ContentView: View {
     @State private var showingSearch = false
     @State private var showingMonthPicker = false
     @State private var searchText = ""
+    @State private var viewMode: ViewMode = .weekly
 
     var body: some View {
         NavigationStack {
-            WeeklyView()
+            currentView
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
@@ -24,14 +47,14 @@ struct ContentView: View {
                         Button(action: { showingMonthPicker = true }) {
                             VStack(spacing: 0) {
                                 HStack(spacing: 4) {
-                                    Text(calendarManager.currentWeekTitle)
+                                    Text(titleText)
                                         .font(.headline)
                                         .foregroundColor(.white)
                                     Image(systemName: "chevron.down")
                                         .font(.caption)
                                         .foregroundColor(.white.opacity(0.8))
                                 }
-                                Text(LocalizedStrings.weekAbbreviation + " \(calendarManager.currentWeekNumber)")
+                                Text(subtitleText)
                                     .font(.caption)
                                     .foregroundColor(.white.opacity(0.8))
                             }
@@ -44,8 +67,8 @@ struct ContentView: View {
                                 .foregroundColor(.white)
                         }
 
-                        Button(action: { calendarManager.goToToday() }) {
-                            Image(systemName: "calendar")
+                        Button(action: { viewMode = viewMode.next() }) {
+                            Image(systemName: viewMode.icon)
                                 .foregroundColor(.white)
                         }
 
@@ -72,6 +95,50 @@ struct ContentView: View {
         }
         .task {
             await calendarManager.loadData()
+        }
+    }
+
+    @ViewBuilder
+    private var currentView: some View {
+        switch viewMode {
+        case .daily:
+            DailyView()
+        case .weekly:
+            WeeklyView()
+        case .monthly:
+            MonthlyView()
+        case .yearly:
+            YearlyView()
+        }
+    }
+
+    private var titleText: String {
+        switch viewMode {
+        case .daily:
+            let formatter = DateFormatter()
+            formatter.locale = AppLanguage.currentLocale
+            formatter.dateFormat = "EEEE, d MMMM yyyy"
+            return formatter.string(from: calendarManager.currentWeekStart)
+        case .weekly:
+            return calendarManager.currentWeekTitle
+        case .monthly, .yearly:
+            let formatter = DateFormatter()
+            formatter.locale = AppLanguage.currentLocale
+            formatter.dateFormat = viewMode == .monthly ? "MMMM yyyy" : "yyyy"
+            return formatter.string(from: calendarManager.currentWeekStart)
+        }
+    }
+
+    private var subtitleText: String {
+        switch viewMode {
+        case .daily:
+            return ""
+        case .weekly:
+            return LocalizedStrings.weekAbbreviation + " \(calendarManager.currentWeekNumber)"
+        case .monthly:
+            return ""
+        case .yearly:
+            return ""
         }
     }
 }

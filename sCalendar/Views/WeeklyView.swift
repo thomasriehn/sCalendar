@@ -3,28 +3,39 @@ import SwiftUI
 struct WeeklyView: View {
     @EnvironmentObject var calendarManager: CalendarManager
 
-    private let columns = [
-        GridItem(.flexible(), spacing: 1),
-        GridItem(.flexible(), spacing: 1)
-    ]
-
     var body: some View {
         GeometryReader { geometry in
-            LazyVGrid(columns: columns, spacing: 1) {
-                // 7 day cells
-                ForEach(Array(calendarManager.currentWeekDates.enumerated()), id: \.offset) { index, date in
-                    DayCell(
-                        date: date,
-                        events: calendarManager.events(for: date),
-                        isLastRow: index >= 6,
-                        showMiniCalendar: false
-                    )
-                    .frame(height: cellHeight(for: geometry, index: index))
+            let cellHeight = geometry.size.height / 4
+            let weekDates = calendarManager.currentWeekDates
+
+            HStack(spacing: 1) {
+                // Left column: Days 1-4
+                VStack(spacing: 1) {
+                    ForEach(0..<4, id: \.self) { index in
+                        DayCell(
+                            date: weekDates[index],
+                            events: calendarManager.events(for: weekDates[index]),
+                            isLastRow: index == 3,
+                            showMiniCalendar: false
+                        )
+                        .frame(height: cellHeight)
+                    }
                 }
 
-                // Mini calendar as 8th cell (same size as a day cell)
-                MiniMonthCell()
-                    .frame(height: cellHeight(for: geometry, index: 7))
+                // Right column: Days 5-7 + Mini calendar
+                VStack(spacing: 1) {
+                    ForEach(4..<7, id: \.self) { index in
+                        DayCell(
+                            date: weekDates[index],
+                            events: calendarManager.events(for: weekDates[index]),
+                            isLastRow: false,
+                            showMiniCalendar: false
+                        )
+                        .frame(height: cellHeight)
+                    }
+                    MiniMonthCell()
+                        .frame(height: cellHeight)
+                }
             }
             .background(Color(.systemBackground))
             .contentShape(Rectangle())
@@ -38,21 +49,6 @@ struct WeeklyView: View {
                         }
                     }
             )
-        }
-    }
-
-    private func cellHeight(for geometry: GeometryProxy, index: Int) -> CGFloat {
-        let availableHeight = geometry.size.height
-        let rowCount: CGFloat = 4
-
-        // Rows 0-1: first 4 days
-        // Rows 2-3: last 3 days + mini calendar
-        if index < 2 {
-            return availableHeight / rowCount * 0.9
-        } else if index < 4 {
-            return availableHeight / rowCount * 1.1
-        } else {
-            return availableHeight / rowCount * 1.0
         }
     }
 }

@@ -1,0 +1,96 @@
+# sCalendar - iOS Calendar App
+
+## Project Overview
+A native iOS calendar app built with SwiftUI that integrates with the system calendar (EventKit). The app supports multiple calendar views, multi-language localization, and iCloud sync for settings.
+
+## Bundle ID
+`com.sCalendar.app`
+
+## Key Features
+- **View Modes**: Daily, Weekly, Monthly, Yearly views with seamless switching
+- **Weekly View Layout**: Left column (days 1-4), Right column (days 5-7 + mini calendar)
+- **Recurring Events**: Support for daily, weekly, monthly, yearly recurrence
+- **Default Calendar**: Configurable default calendar for new events in Settings
+- **Week Start Setting**: Choose between Monday or Sunday as first day of week
+- **Multi-language Support**: 9 languages (English, German, French, Spanish, Italian, Dutch, Portuguese, Japanese, Chinese)
+- **iCloud Sync**: Settings and calendar customizations sync via iCloud
+- **Swipe Navigation**: Vertical swipe to navigate between time periods
+
+## Project Structure
+```
+sCalendar/
+├── sCalendarApp.swift          # App entry point
+├── ContentView.swift           # Main view with navigation and view mode switching
+├── Info.plist                  # App configuration
+├── Models/
+│   ├── CalendarEvent.swift     # Event model wrapping EKEvent
+│   ├── CalendarInfo.swift      # Calendar info model
+│   └── CalendarSourceCustomization.swift
+├── Services/
+│   ├── CalendarManager.swift   # EventKit integration, CRUD operations
+│   ├── AppSettings.swift       # Settings + LocalizedStrings
+│   └── CloudKitManager.swift   # iCloud sync
+├── Views/
+│   ├── WeeklyView.swift        # 2-column weekly layout
+│   ├── DailyView.swift         # Hourly timeline view
+│   ├── MonthlyView.swift       # Month grid view
+│   ├── YearlyView.swift        # 12-month overview
+│   ├── DayCell.swift           # Individual day cell component
+│   ├── MiniMonthView.swift     # Mini calendar widget
+│   ├── AddEventView.swift      # Create/edit event form
+│   ├── EventDetailView.swift   # Event details display
+│   ├── SettingsView.swift      # App settings
+│   └── CalendarSourceView.swift # Calendar customization
+└── Extensions/
+    ├── DateExtensions.swift    # Date helper methods
+    └── ColorExtensions.swift   # Color utilities
+```
+
+## Build & Upload Commands
+```bash
+# Build for simulator
+xcodebuild -scheme sCalendar -destination 'id=71A51C99-4D78-46D3-BA72-0ABCF2D4F117' build
+
+# Increment build number
+agvtool new-version -all <number>
+
+# Archive for App Store
+xcodebuild -scheme sCalendar -archivePath /tmp/sCalendar.xcarchive archive
+
+# Upload to TestFlight
+xcodebuild -exportArchive -archivePath /tmp/sCalendar.xcarchive -exportPath /tmp/sCalendar-export -exportOptionsPlist /tmp/ExportOptions.plist
+```
+
+## Available Simulators
+- iPhone 15 Pro: `71A51C99-4D78-46D3-BA72-0ABCF2D4F117`
+- iPhone 15 Pro Max: `B5B3F09E-C3E0-4A3A-94DB-DFC3B9F3683B`
+- iPhone 11 Pro Max: `9F32EDE2-EC52-49CA-BADF-3A568D6C8B3F`
+
+## Localization
+All user-facing strings are in `AppSettings.swift` via the `LocalizedStrings` struct. Each string has translations for:
+- English (default)
+- German (de)
+- French (fr)
+- Spanish (es)
+- Italian (it)
+- Dutch (nl)
+- Portuguese (pt)
+- Japanese (ja)
+- Chinese Simplified (zh-Hans)
+
+## Settings Storage
+- `UserDefaults` for local storage
+- `NSUbiquitousKeyValueStore` for iCloud sync
+- Keys: `appLanguage`, `weekStartsOnMonday`, `defaultCalendarId`
+
+## GitHub
+- Repository: https://github.com/thomasriehn/sCalendar
+- Privacy Policy: https://thomasriehn.github.io/sCalendar/privacy.html
+
+## Recent Changes (Build 11)
+1. Added view modes (daily, weekly, monthly, yearly)
+2. New weekly layout with left/right columns
+3. Default calendar setting
+4. Recurring events support
+5. Calendar color picker in event creation
+6. Equal-sized cells in monthly/yearly views

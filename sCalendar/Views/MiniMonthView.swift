@@ -2,7 +2,10 @@ import SwiftUI
 
 struct MiniMonthView: View {
     @EnvironmentObject var calendarManager: CalendarManager
-    @State private var displayedMonth: Date = Date()
+
+    private var displayedMonth: Date {
+        calendarManager.currentWeekStart
+    }
 
     private var dayLabels: [String] {
         let formatter = DateFormatter()

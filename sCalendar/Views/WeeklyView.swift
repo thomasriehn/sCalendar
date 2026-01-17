@@ -28,7 +28,7 @@ struct WeeklyView: View {
                 MiniMonthCell()
                     .frame(height: cellHeight(for: geometry, index: 7))
             }
-            .background(Color(.systemGray5))
+            .background(Color(.systemBackground))
             .offset(y: dragOffset)
             .contentShape(Rectangle())
             .gesture(

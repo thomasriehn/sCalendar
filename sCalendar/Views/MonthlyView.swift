@@ -130,9 +130,6 @@ struct MonthDayCell: View {
                     .font(.system(size: 14, weight: date.isToday ? .bold : .regular))
                     .foregroundColor(isSunday ? .red : .primary)
                     .padding(4)
-                    .background(
-                        date.isToday ? Circle().fill(Color.blue.opacity(0.3)) : nil
-                    )
                 Spacer()
             }
 
@@ -168,7 +165,7 @@ struct MonthDayCell: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .padding(2)
-        .background(Color(.systemBackground))
+        .background(date.isToday ? Color.blue.opacity(0.1) : Color(.systemBackground))
         .contentShape(Rectangle())
         .onTapGesture {
             showingAddEvent = true

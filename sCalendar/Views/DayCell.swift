@@ -45,12 +45,6 @@ struct DayCell: View {
                     .font(.system(size: 14, weight: .medium))
                     .foregroundColor(headerColor)
 
-                if isToday {
-                    Circle()
-                        .fill(Color.blue)
-                        .frame(width: 8, height: 8)
-                }
-
                 Spacer()
             }
             .padding(.horizontal, 4)
@@ -103,7 +97,7 @@ struct DayCell: View {
     }
 
     private var backgroundColor: Color {
-        if isWeekend && date.dayOfWeek == 7 {
+        if isToday {
             return Color.blue.opacity(0.1)
         }
         return Color(.systemBackground)

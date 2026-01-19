@@ -103,10 +103,9 @@ struct EventRow: View {
             if isPartialDay {
                 Text(displayTimeRangeString)
                     .font(.system(size: 10, weight: .regular))
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.white.opacity(0.8))
                     .padding(.horizontal, 4)
                     .padding(.vertical, 2)
-                    .background(Color(.systemGray5))
             }
 
             Spacer(minLength: 0)

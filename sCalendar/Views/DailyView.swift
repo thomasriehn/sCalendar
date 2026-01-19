@@ -26,7 +26,7 @@ struct DailyView: View {
 
                             VStack(alignment: .leading, spacing: 2) {
                                 ForEach(eventsForHour(hour)) { event in
-                                    EventRow(event: event)
+                                    EventRow(event: event, displayDate: currentDate)
                                 }
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)

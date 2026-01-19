@@ -110,6 +110,27 @@ struct MonthDayCell: View {
         date.dayOfWeek == 1
     }
 
+    private func shouldShowAsAllDay(_ event: CalendarEvent) -> Bool {
+        if event.isAllDay {
+            return true
+        }
+
+        let calendar = Calendar.current
+        let eventStartDay = calendar.startOfDay(for: event.startDate)
+        let eventEndDay = calendar.startOfDay(for: event.endDate)
+
+        // Single-day event - not all-day style
+        if eventStartDay == eventEndDay {
+            return false
+        }
+
+        // Multi-day event: show as all-day if not start or end day
+        let isStartDay = calendar.isDate(date, inSameDayAs: event.startDate)
+        let isEndDay = calendar.isDate(date, inSameDayAs: event.endDate)
+
+        return !isStartDay && !isEndDay
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
             HStack {
@@ -125,12 +146,24 @@ struct MonthDayCell: View {
 
             VStack(alignment: .leading, spacing: 1) {
                 ForEach(events.prefix(3)) { event in
-                    Text(event.title)
-                        .font(.system(size: 9))
-                        .lineLimit(1)
-                        .padding(.horizontal, 2)
-                        .background(calendarManager.calendarInfo(for: event)?.color.opacity(0.3) ?? Color.blue.opacity(0.3))
-                        .cornerRadius(2)
+                    let eventColor = calendarManager.calendarInfo(for: event)?.color ?? .blue
+                    if shouldShowAsAllDay(event) {
+                        Text(event.title)
+                            .font(.system(size: 9))
+                            .foregroundColor(.white)
+                            .lineLimit(1)
+                            .padding(.horizontal, 2)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(eventColor)
+                            .cornerRadius(2)
+                    } else {
+                        Text(event.title)
+                            .font(.system(size: 9))
+                            .lineLimit(1)
+                            .padding(.horizontal, 2)
+                            .background(eventColor.opacity(0.3))
+                            .cornerRadius(2)
+                    }
                 }
                 if events.count > 3 {
                     Text("+\(events.count - 3)")

@@ -177,15 +177,13 @@ class CalendarManager: ObservableObject {
 
     func events(for date: Date) -> [CalendarEvent] {
         let calendar = Calendar.current
+        let checkDateStart = calendar.startOfDay(for: date)
+        let checkDateEnd = calendar.date(byAdding: .day, value: 1, to: checkDateStart) ?? checkDateStart
+
         return events.filter { event in
-            if event.isAllDay {
-                let eventStart = calendar.startOfDay(for: event.startDate)
-                let eventEnd = calendar.startOfDay(for: event.endDate)
-                let checkDate = calendar.startOfDay(for: date)
-                return checkDate >= eventStart && checkDate <= eventEnd
-            } else {
-                return calendar.isDate(event.startDate, inSameDayAs: date)
-            }
+            // Check if the event overlaps with the given date
+            // Event overlaps if: event starts before end of check date AND event ends after start of check date
+            return event.startDate < checkDateEnd && event.endDate > checkDateStart
         }.sorted { $0.startDate < $1.startDate }
     }
 

@@ -59,7 +59,7 @@ struct DayCell: View {
             // Events list
             VStack(alignment: .leading, spacing: 2) {
                 ForEach(events.prefix(4)) { event in
-                    EventRow(event: event)
+                    EventRow(event: event, displayDate: date)
                         .onTapGesture {
                             selectedEvent = event
                         }

@@ -119,16 +119,8 @@ struct MonthDayCell: View {
         let eventStartDay = calendar.startOfDay(for: event.startDate)
         let eventEndDay = calendar.startOfDay(for: event.endDate)
 
-        // Single-day event - not all-day style
-        if eventStartDay == eventEndDay {
-            return false
-        }
-
-        // Multi-day event: show as all-day if not start or end day
-        let isStartDay = calendar.isDate(date, inSameDayAs: event.startDate)
-        let isEndDay = calendar.isDate(date, inSameDayAs: event.endDate)
-
-        return !isStartDay && !isEndDay
+        // Multi-day event: always show as all-day style bar
+        return eventStartDay != eventEndDay
     }
 
     var body: some View {

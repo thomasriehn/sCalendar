@@ -13,33 +13,36 @@ struct EventRow: View {
         calendarInfo?.color ?? .blue
     }
 
-    /// Determines if this event should be displayed as all-day style for the given display date
+    /// Determines if this is a multi-day event
+    private var isMultiDayEvent: Bool {
+        let calendar = Calendar.current
+        let eventStartDay = calendar.startOfDay(for: event.startDate)
+        let eventEndDay = calendar.startOfDay(for: event.endDate)
+        return eventStartDay != eventEndDay
+    }
+
+    /// Determines if this event should be displayed as all-day style (colored bar)
     /// Returns true if:
     /// - Event is actually all-day, OR
-    /// - Event spans the entire display date (not start or end day of a multi-day timed event)
+    /// - Event is a multi-day event (on any day)
     private var shouldShowAsAllDay: Bool {
         if event.isAllDay {
             return true
         }
+        return isMultiDayEvent
+    }
 
-        guard let date = displayDate else {
+    /// For multi-day timed events, determines if this is a partial day (start or end)
+    private var isPartialDay: Bool {
+        guard !event.isAllDay, isMultiDayEvent, let date = displayDate else {
             return false
         }
 
         let calendar = Calendar.current
-        let eventStartDay = calendar.startOfDay(for: event.startDate)
-        let eventEndDay = calendar.startOfDay(for: event.endDate)
-
-        // If it's a single-day event, show with times
-        if eventStartDay == eventEndDay {
-            return false
-        }
-
-        // If display date is not the start day and not the end day, show as all-day
         let isStartDay = calendar.isDate(date, inSameDayAs: event.startDate)
         let isEndDay = calendar.isDate(date, inSameDayAs: event.endDate)
 
-        return !isStartDay && !isEndDay
+        return isStartDay || isEndDay
     }
 
     /// Returns the appropriate time range string for the display date
@@ -89,16 +92,29 @@ struct EventRow: View {
     }
 
     private var allDayEventView: some View {
-        Text(event.title)
-            .font(.system(size: 12, weight: .regular))
-            .foregroundColor(.white)
-            .lineLimit(1)
-            .padding(.horizontal, 6)
-            .padding(.vertical, 2)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(eventColor)
-            .cornerRadius(3)
-            .padding(.horizontal, 2)
+        HStack(spacing: 0) {
+            Text(event.title)
+                .font(.system(size: 12, weight: .regular))
+                .foregroundColor(.white)
+                .lineLimit(1)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+
+            if isPartialDay {
+                Text(displayTimeRangeString)
+                    .font(.system(size: 10, weight: .regular))
+                    .foregroundColor(.secondary)
+                    .padding(.horizontal, 4)
+                    .padding(.vertical, 2)
+                    .background(Color(.systemGray5))
+            }
+
+            Spacer(minLength: 0)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(eventColor)
+        .cornerRadius(3)
+        .padding(.horizontal, 2)
     }
 
     private var timedEventView: some View {

@@ -90,7 +90,7 @@ All user-facing strings are in `AppSettings.swift` via the `LocalizedStrings` st
 - Repository: https://github.com/thomasriehn/sCalendar
 - Privacy Policy: https://thomasriehn.github.io/sCalendar/privacy.html
 
-## Recent Changes (Build 15)
+## Recent Changes (Build 16)
 1. Added view modes (daily, weekly, monthly, yearly)
 2. New weekly layout with left/right columns
 3. Default calendar setting
@@ -100,5 +100,7 @@ All user-facing strings are in `AppSettings.swift` via the `LocalizedStrings` st
 7. Equal-sized cells in monthly/yearly views
 8. Multi-day timed events display on all days they span
 9. Colored bar style for all days of multi-day events (start, middle, end)
-10. Time range display on partial days (start: "HH:mm-24:00", end: "00:00-HH:mm") with gray background
+10. Time range display on partial days (start: "HH:mm-24:00", end: "00:00-HH:mm")
 11. App icon resized to fill canvas without white border
+12. Today indicator: light blue cell background (replaces blue dot)
+13. Removed Saturday background highlight (only today is highlighted)

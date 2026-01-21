@@ -90,7 +90,11 @@ All user-facing strings are in `AppSettings.swift` via the `LocalizedStrings` st
 - Repository: https://github.com/thomasriehn/sCalendar
 - Privacy Policy: https://thomasriehn.github.io/sCalendar/privacy.html
 
-## Recent Changes (Build 16)
+## Current Version
+- Version: 1.1
+- Build: 17
+
+## Recent Changes (v1.1 Build 17)
 1. Added view modes (daily, weekly, monthly, yearly)
 2. New weekly layout with left/right columns
 3. Default calendar setting
@@ -104,3 +108,4 @@ All user-facing strings are in `AppSettings.swift` via the `LocalizedStrings` st
 11. App icon resized to fill canvas without white border
 12. Today indicator: light blue cell background (replaces blue dot)
 13. Removed Saturday background highlight (only today is highlighted)
+14. Fixed calendar picker in Add Event view

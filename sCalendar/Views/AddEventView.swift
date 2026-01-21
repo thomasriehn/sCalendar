@@ -138,31 +138,17 @@ struct AddEventView: View {
                 Section {
                     TextField(LocalizedStrings.title, text: $title)
 
-                    Picker(selection: $selectedCalendarId) {
-                        Text(LocalizedStrings.selectCalendar).tag(nil as String?)
+                    Picker(LocalizedStrings.calendar, selection: $selectedCalendarId) {
                         ForEach(writableCalendars) { calendar in
-                            Label {
-                                Text(calendar.displayName)
-                            } icon: {
+                            HStack {
                                 Circle()
                                     .fill(calendar.color)
                                     .frame(width: 12, height: 12)
+                                Text(calendar.displayName)
                             }
                             .tag(calendar.id as String?)
                         }
-                    } label: {
-                        HStack {
-                            Text(LocalizedStrings.calendar)
-                            Spacer()
-                            if let calendarId = selectedCalendarId,
-                               let calendar = writableCalendars.first(where: { $0.id == calendarId }) {
-                                Circle()
-                                    .fill(calendar.color)
-                                    .frame(width: 12, height: 12)
-                            }
-                        }
                     }
-                    .pickerStyle(.navigationLink)
                 }
 
                 Section {
